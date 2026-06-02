@@ -223,7 +223,7 @@
 						"use_float_with_nano_scanf": false,
 						"do_not_use_syscalls": true,
 						"verbose": false,
-						"use_wch_printffloat": false,
+						"use_wch_printffloat": true,
 						"use_wch_printf": false,
 						"use_iqmath": false,
 						"other_linker_flags": ""
@@ -259,7 +259,7 @@
 						"use_float_with_nano_scanf": false,
 						"do_not_use_syscalls": true,
 						"verbose": false,
-						"use_wch_printffloat": false,
+						"use_wch_printffloat": true,
 						"use_wch_printf": false,
 						"use_iqmath": false,
 						"other_linker_flags": ""

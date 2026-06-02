@@ -193,3 +193,17 @@ void MPU6050_GetData(int16_t *AccX, int16_t *AccY, int16_t *AccZ,
 	DataL = MPU6050_ReadReg(MPU6050_GYRO_ZOUT_L);		//读取陀螺仪Z轴的低8位数据
 	*GyroZ = (DataH << 8) | DataL;						//数据拼接，通过输出参数返回
 }
+
+void MPU6050_GetRoll(void)
+{
+	MPU6050_GetData(&MPU6050_Data.AccX, &MPU6050_Data.AccY, &MPU6050_Data.AccZ, 
+					&MPU6050_Data.GyroX, &MPU6050_Data.GyroY, &MPU6050_Data.GyroZ);
+
+
+	AngleAcc.AccZ = -atan2(MPU6050_Data.AccX, MPU6050_Data.AccY) / 3.14159f * 180.0f;
+	AngleAcc.AccZ += 10;	//注意修改，与实际为准
+
+	float Alpha = 0.01f;
+	AngleGyro.GyroZ = AngleFilter.Roll + MPU6050_Data.GyroZ / 32768.0f * 2000.0f * 0.01f;
+	AngleFilter.Roll = Alpha * AngleAcc.AccZ + (1.0f - Alpha) * AngleGyro.GyroZ;
+}

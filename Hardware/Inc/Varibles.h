@@ -33,13 +33,19 @@ typedef struct{
 	float Yaw;
 }MPU6050_AngleFiltertypedef;
 
-
+typedef struct{
+	int16_t AccZ;
+	int16_t GyroZ;
+}MPU6050_Zaxistypedef;
 
 
 
 extern MPU6050_Datatypedef MPU6050_Data;
-extern MPU6050_AngleAcctypedef AngleGyro;
+extern MPU6050_AngleAcctypedef AngleAcc;
+extern MPU6050_AngleGyrotypedef AngleGyro;
 extern MPU6050_AngleFiltertypedef AngleFilter;
+extern MPU6050_Zaxistypedef Zaxis_Data;
+
 extern int16_t AccX;
 extern int16_t AccY;
 extern int16_t AccZ;

@@ -56,7 +56,7 @@ main-build: Project.elf secondary-outputs
 
 # Tool invocations
 Project.elf: $(OBJS) $(USER_OBJS_ESCAPE)
-	@	riscv-none-embed-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -msave-restore -fmax-errors=20 -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized -g -T "d:\MounRiver Project\Project\Ld\Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Project.map" --specs=nano.specs --specs=nosys.specs -o "Project.elf" $(OBJS) $(LIBS)
+	@	riscv-none-embed-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -msave-restore -fmax-errors=20 -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized -g -T "d:\MounRiver Project\Project\Ld\Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Project.map" --specs=nano.specs --specs=nosys.specs -o "Project.elf" $(OBJS) $(LIBS) -lprintfloat
 Project.hex: Project.elf
 	@	riscv-none-embed-objcopy -O ihex "Project.elf" "Project.hex"
 Project.lst: Project.elf
