@@ -28,7 +28,8 @@ Hardware/Src/Varibles.o: ../Hardware/Src/Varibles.c \
  d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_wwdg.h \
  d:/MounRiver\ Project/Project/User/ch32v30x_it.h \
  d:/MounRiver\ Project/Project/Debug/debug.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h
+ d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h \
+ D:\MounRiver\ Project\Project\Hardware\Inc/PID.h
 
 D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h:
 
@@ -89,3 +90,5 @@ d:/MounRiver\ Project/Project/User/ch32v30x_it.h:
 d:/MounRiver\ Project/Project/Debug/debug.h:
 
 d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h:
+
+D:\MounRiver\ Project\Project\Hardware\Inc/PID.h:

@@ -5,18 +5,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Hardware/Src/Encoder.c \
 ../Hardware/Src/MPU6050.c \
+../Hardware/Src/PID.c \
 ../Hardware/Src/PWM.c \
+../Hardware/Src/Timer.c \
 ../Hardware/Src/Varibles.c 
 
 C_DEPS += \
+./Hardware/Src/Encoder.d \
 ./Hardware/Src/MPU6050.d \
+./Hardware/Src/PID.d \
 ./Hardware/Src/PWM.d \
+./Hardware/Src/Timer.d \
 ./Hardware/Src/Varibles.d 
 
 OBJS += \
+./Hardware/Src/Encoder.o \
 ./Hardware/Src/MPU6050.o \
+./Hardware/Src/PID.o \
 ./Hardware/Src/PWM.o \
+./Hardware/Src/Timer.o \
 ./Hardware/Src/Varibles.o 
 
 DIR_OBJS += \

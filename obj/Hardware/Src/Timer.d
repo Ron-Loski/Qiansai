@@ -1,4 +1,5 @@
-User/main.o: ../User/main.c d:/MounRiver\ Project/Project/Debug/debug.h \
+Hardware/Src/Timer.o: ../Hardware/Src/Timer.c \
+ D:\MounRiver\ Project\Project\Hardware\Inc/Timer.h \
  d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h \
  d:/MounRiver\ Project/Project/Core/core_riscv.h \
  d:/MounRiver\ Project/Project/User/system_ch32v30x.h \
@@ -26,18 +27,10 @@ User/main.o: ../User/main.c d:/MounRiver\ Project/Project/Debug/debug.h \
  d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_usart.h \
  d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_wwdg.h \
  d:/MounRiver\ Project/Project/User/ch32v30x_it.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/Global_Inc.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/PID.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050_Reg.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/PWM.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/Timer.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/Encoder.h \
- D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h
+ d:/MounRiver\ Project/Project/Debug/debug.h \
+ d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h
 
-d:/MounRiver\ Project/Project/Debug/debug.h:
+D:\MounRiver\ Project\Project\Hardware\Inc/Timer.h:
 
 d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h:
 
@@ -93,22 +86,6 @@ d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_wwdg.h:
 
 d:/MounRiver\ Project/Project/User/ch32v30x_it.h:
 
+d:/MounRiver\ Project/Project/Debug/debug.h:
+
 d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/Global_Inc.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/PID.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050_Reg.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/PWM.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/Timer.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/Encoder.h:
-
-D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h:

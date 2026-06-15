@@ -2,6 +2,7 @@
 #define __VARIBLES_H_
 
 #include "ch32v30x.h"
+#include "PID.h"
 
 typedef struct {
     int16_t AccX;
@@ -59,5 +60,14 @@ extern int16_t GyroX;
 extern int16_t GyroY;
 extern int16_t GyroZ;
 
+extern PID_t AngleLoop;
+extern PID_t SpeedLoop;
+extern PID_t TurnLoop;
+
+
+extern int16_t LeftPWM, RightPWM;
+extern int16_t AvePWM, DifPWM;
+extern float SpeedLeft, SpeedRight;
+extern float AveSpeed, DifSpeed;
 
 #endif

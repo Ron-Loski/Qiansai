@@ -194,6 +194,8 @@ void MPU6050_GetData(int16_t *AccX, int16_t *AccY, int16_t *AccZ,
 	*GyroZ = (DataH << 8) | DataL;						//数据拼接，通过输出参数返回
 }
 
+
+
 void MPU6050_GetRoll(void)
 {
 	MPU6050_GetData(&MPU6050_Data.AccX, &MPU6050_Data.AccY, &MPU6050_Data.AccZ, 
@@ -203,7 +205,12 @@ void MPU6050_GetRoll(void)
 	AngleAcc.AccZ = -atan2(MPU6050_Data.AccX, MPU6050_Data.AccY) / 3.14159f * 180.0f;
 	AngleAcc.AccZ += 10;	//注意修改，与实际为准
 
+	/*互补滤波*/
 	float Alpha = 0.01f;
 	AngleGyro.GyroZ = AngleFilter.Roll + MPU6050_Data.GyroZ / 32768.0f * 2000.0f * 0.01f;
 	AngleFilter.Roll = Alpha * AngleAcc.AccZ + (1.0f - Alpha) * AngleGyro.GyroZ;
 }
+
+
+
+

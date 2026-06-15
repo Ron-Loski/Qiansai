@@ -30,6 +30,7 @@ Hardware/Src/MPU6050.o: ../Hardware/Src/MPU6050.c \
  d:/MounRiver\ Project/Project/Debug/debug.h \
  d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h \
  D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h \
+ D:\MounRiver\ Project\Project\Hardware\Inc/PID.h \
  D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050_Reg.h
 
 D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050.h:
@@ -93,5 +94,7 @@ d:/MounRiver\ Project/Project/Debug/debug.h:
 d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h:
 
 D:\MounRiver\ Project\Project\Hardware\Inc/Varibles.h:
+
+D:\MounRiver\ Project\Project\Hardware\Inc/PID.h:
 
 D:\MounRiver\ Project\Project\Hardware\Inc/MPU6050_Reg.h:
