@@ -10,7 +10,7 @@ void PWM_Init(void)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -20,9 +20,9 @@ void PWM_Init(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1 | GPIO_Pin_3);
 
-	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 1000000 - 1;
+	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 100000 - 1;
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Period = 1000 - 1;
+	TIM_TimeBaseInitStructure.TIM_Period = 100 - 1;
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
@@ -70,18 +70,18 @@ void PWM_EnableChannel(Motor_Numtypedef Motor_Num, uint16_t Compare, Motor_Direc
 	{
 		if (Motor_Num == Motor_Left)	//L1
 		{
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			GPIO_WriteBit(GPIOA, GPIO_Pin_1, Bit_RESET);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_SET);
 
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			TIM_SetCompare1(TIM2, Compare);
-			TIM_CCxCmd(TIM2, TIM_Channel_1, TIM_CCx_Enable);
+			TIM_SetCompare2(TIM2, Compare);
+			TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Enable);
 		}
 		if (Motor_Num == Motor_Right)	//L2
 		{
@@ -89,7 +89,7 @@ void PWM_EnableChannel(Motor_Numtypedef Motor_Num, uint16_t Compare, Motor_Direc
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			GPIO_WriteBit(GPIOA, GPIO_Pin_3, Bit_RESET);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_3, Bit_SET);
 
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -103,18 +103,18 @@ void PWM_EnableChannel(Motor_Numtypedef Motor_Num, uint16_t Compare, Motor_Direc
 	{
 		if (Motor_Num == Motor_Left)	//L1
 		{
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_RESET);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_1, Bit_SET);
 
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			TIM_SetCompare2(TIM2, Compare);
-			TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Enable);
+			TIM_SetCompare1(TIM2, Compare);
+			TIM_CCxCmd(TIM2, TIM_Channel_1, TIM_CCx_Enable);
 		}
 		if (Motor_Num == Motor_Right)	//L2
 		{
@@ -122,7 +122,7 @@ void PWM_EnableChannel(Motor_Numtypedef Motor_Num, uint16_t Compare, Motor_Direc
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			GPIO_WriteBit(GPIOA, GPIO_Pin_2, Bit_RESET);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_2, Bit_SET);
 
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -135,4 +135,3 @@ void PWM_EnableChannel(Motor_Numtypedef Motor_Num, uint16_t Compare, Motor_Direc
 
 	TIM_Cmd(TIM2, ENABLE);
 }
-
