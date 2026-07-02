@@ -54,18 +54,14 @@ int main(void)
 	MPU6050_Init();
 	PWM_Init();
 
-	PWM_EnableChannel(Motor_Left, 200, Forward);
-	PWM_EnableChannel(Motor_Right, 200, Reverse);
-	Timer_Init();
-
-	GPIO_State1 = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1);
-	GPIO_State2 = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3);
+	// Timer_Init();
 
 
 	while(1)
     {
 		MPU6050_GetRoll();
 		// printf("%d,%d,%d,%d,%d,%d\r\n", MPU6050_Data.AccX, MPU6050_Data.AccY, MPU6050_Data.AccZ, MPU6050_Data.GyroX, MPU6050_Data.GyroY, MPU6050_Data.GyroZ);
+		printf("%f\r\n", AngleFilter.Roll);
 	}
 }
 

@@ -31,7 +31,7 @@ PID_t AngleLoop = {         //Z÷·Ω«∂»ª∑
 };
 
 PID_t SpeedLoop = {
-     .Target = 0.0f,
+     .Target = 20.0f,
 
     .Kp = 0.0f,
     .Ki = 0.0f,
