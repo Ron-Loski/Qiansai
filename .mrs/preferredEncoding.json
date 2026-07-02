@@ -1,0 +1,16 @@
+{
+	"details": [
+		{
+			"file": "User/main.c",
+			"encoding": "gbk"
+		},
+		{
+			"file": "Hardware/Src/MPU6050.c",
+			"encoding": "gbk"
+		},
+		{
+			"file": "Hardware/Src/Motor.c",
+			"encoding": "utf8"
+		}
+	]
+}

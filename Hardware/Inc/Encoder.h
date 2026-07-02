@@ -1,14 +1,18 @@
-#ifndef _ENCODER_H__
-#define _ENCODER_H__
+#ifndef __ENCODEE_H_
+#define __ENCODEE_H_
+
 
 #include "ch32v30x.h"
+#include "ch32v30x_rcc.h"
+#include "ch32v30x_gpio.h"
+#include "ch32v30x_tim.h"
 
-typedef enum {
-	Encoder_Left = 0,
-	Encoder_Right
-}Encoder_Numtypedef;
+#define ENCODER_1    1
+#define ENCODER_2    2
+#define wheellen     15          
 
 void Encoder_Init(void);
-int16_t Encoder_Get(Encoder_Numtypedef n);
+int16_t Encoder_GetCount(uint8_t Encoder);
+
 
 #endif

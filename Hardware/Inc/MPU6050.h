@@ -5,7 +5,6 @@
 #include "Varibles.h"
 #include "MPU6050_Reg.h"
 #include "math.h"
-#include "PID.h"
 
 #define SCL_PORT	GPIOB
 #define SCL_PIN		GPIO_Pin_10
@@ -30,3 +29,4 @@ void MPU6050_GetRoll(void);
 
 
 #endif
+

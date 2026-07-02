@@ -4,8 +4,8 @@
 		{
 			"type": "mrs-debugger",
 			"request": "launch",
-			"name": "Project",
-			"cwd": "d:\\MounRiver Project\\Project",
+			"name": "QIANSAI",
+			"cwd": "c:\\Users\\15256\\Desktop\\QIANSAI",
 			"openOCDCfg": {
 				"useLocalOpenOCD": true,
 				"executable": "d:/MounRiver/MounRiver_Studio2/resources/app/resources/win32/components/WCH/OpenOCD/OpenOCD/bin/openocd.exe",
@@ -22,7 +22,7 @@
 				"enableNoZeroWaitingAreaFlash": false
 			},
 			"gdbCfg": {
-				"executable": "d:/MounRiver/MounRiver_Studio2/resources/app/resources/win32/components/WCH/Toolchain/RISC-V Embedded GCC/bin/riscv-none-embed-gdb.exe",
+				"executable": "d:/MounRiver/MounRiver_Studio2/resources/app/resources/win32/components/WCH/Toolchain/RISC-V Embedded GCC12/bin/riscv-wch-elf-gdb.exe",
 				"commands": [
 					"set mem inaccessible-by-default off",
 					"set architecture riscv:rv32",
@@ -39,8 +39,8 @@
 					"additionalCommands": []
 				},
 				"loadedFiles": {
-					"executableFile": "d:\\MounRiver Project\\Project\\obj\\Project.elf",
-					"symbolFile": "d:\\MounRiver Project\\Project\\obj\\Project.elf",
+					"executableFile": "c:\\Users\\15256\\Desktop\\QIANSAI\\obj\\QIANSAI.elf",
+					"symbolFile": "c:\\Users\\15256\\Desktop\\QIANSAI\\obj\\QIANSAI.elf",
 					"executableFileOffset": 0,
 					"symbolFileOffset": 0
 				},

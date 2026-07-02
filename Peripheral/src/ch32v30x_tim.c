@@ -2,7 +2,7 @@
 * File Name          : ch32v30x_tim.c
 * Author             : WCH
 * Version            : V1.0.1
-* Date               : 2025/08/04
+* Date               : 2025/07/04
 * Description        : This file provides all the TIM firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -717,6 +717,8 @@ void TIM_ITRxExternalClockConfig(TIM_TypeDef *TIMx, uint16_t TIM_InputTriggerSou
  *          TIM_ICPolarity - specifies the TIx Polarity.
  *             TIM_ICPolarity_Rising.
  *             TIM_ICPolarity_Falling.
+ *             TIM_DMA_COM - TIM Commutation DMA source.
+ *             TIM_DMA_Trigger - TIM Trigger DMA source.
  *          ICFilter - specifies the filter value.
  *             This parameter must be a value between 0x0 and 0xF.
  *
@@ -2152,7 +2154,7 @@ void TIM_ClearFlag(TIM_TypeDef *TIMx, uint16_t TIM_FLAG)
  *            TIM_IT_Break - TIM Break Interrupt source.
  *            TIM6/TIM7 only have TIM_IT_Update - TIM update Interrupt source.
  * 
- * @return  SET or RESET
+ * @return  none
  */
 ITStatus TIM_GetITStatus(TIM_TypeDef *TIMx, uint16_t TIM_IT)
 {

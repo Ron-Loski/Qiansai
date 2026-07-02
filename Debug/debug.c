@@ -243,10 +243,10 @@ __attribute__((used)) void *_sbrk(ptrdiff_t incr)
     static char *curbrk = _end;
 
     if ((curbrk + incr < _end) || (curbrk + incr > _heap_end))
-        return NULL - 1;
+    return NULL - 1;
 
-    curbrk += incr;
-        return curbrk - incr;
+        curbrk += incr;
+    return curbrk - incr;
 }
 
 

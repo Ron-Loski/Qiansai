@@ -1,5 +1,5 @@
 ################################################################################
-# MRS Version: 2.4.0
+# MRS Version: 2.5.0
 # Automatically-generated file. Do not edit!
 ################################################################################
 -include ../makefile.init
@@ -39,34 +39,34 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-Project.hex \
+QIANSAI.hex \
 
 SECONDARY_LIST += \
-Project.lst \
+QIANSAI.lst \
 
 SECONDARY_SIZE += \
-Project.siz \
+QIANSAI.siz \
 
 
 # All Target
 all: 
 	$(MAKE) --no-print-directory main-build 
 
-main-build: Project.elf secondary-outputs
+main-build: QIANSAI.elf secondary-outputs
 
 # Tool invocations
-Project.elf: $(OBJS) $(USER_OBJS_ESCAPE)
-	@	riscv-none-embed-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -msave-restore -fmax-errors=20 -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized -g -T "d:\MounRiver Project\Project\Ld\Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Project.map" --specs=nano.specs --specs=nosys.specs -o "Project.elf" $(OBJS) $(LIBS) -lprintfloat
-Project.hex: Project.elf
-	@	riscv-none-embed-objcopy -O ihex "Project.elf" "Project.hex"
-Project.lst: Project.elf
-	@	riscv-none-embed-objdump --all-headers --demangle --disassemble -M xw "Project.elf" > "Project.lst"
-Project.siz: Project.elf
-	riscv-none-embed-size --format=berkeley "Project.elf"
+QIANSAI.elf: $(OBJS) $(USER_OBJS_ESCAPE)
+	@	riscv-wch-elf-gcc -march=rv32imac_xw -mabi=ilp32 -msmall-data-limit=8 -msave-restore -fmax-errors=20 -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized -g -T "c:\Users\15256\Desktop\QIANSAI\Ld\Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"QIANSAI.map" --specs=nano.specs --specs=nosys.specs -o "QIANSAI.elf" $(OBJS) $(LIBS) -lprintfloat
+QIANSAI.hex: QIANSAI.elf
+	@	riscv-wch-elf-objcopy -O ihex "QIANSAI.elf" "QIANSAI.hex"
+QIANSAI.lst: QIANSAI.elf
+	@	riscv-wch-elf-objdump --all-headers --demangle --disassemble -M xw "QIANSAI.elf" > "QIANSAI.lst"
+QIANSAI.siz: QIANSAI.elf
+	riscv-wch-elf-size --format=berkeley "QIANSAI.elf"
 
 # Other Targets
 clean:
-	-$(RM) $(DIR_OBJS) $(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE) Project.elf
+	-$(RM) $(DIR_OBJS) $(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE) QIANSAI.elf
 	-$(RM) $(DIR_EXPANDS) $(CALLGRAPH_DOT)
 	-$(RM) $(DIR_DEPS)
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)

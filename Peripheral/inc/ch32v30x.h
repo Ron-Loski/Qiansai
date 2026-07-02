@@ -35,8 +35,8 @@
 #define HSI_VALUE    ((uint32_t)8000000) /* Value of the Internal oscillator in Hz */
 
 /* CH32V30x Standard Peripheral Library version number */
-#define __CH32V30x_STDPERIPH_VERSION_MAIN   (0x03) /* [15:8] main version */
-#define __CH32V30x_STDPERIPH_VERSION_SUB    (0x00) /* [7:0] sub version */
+#define __CH32V30x_STDPERIPH_VERSION_MAIN   (0x02) /* [15:8] main version */
+#define __CH32V30x_STDPERIPH_VERSION_SUB    (0x09) /* [7:0] sub version */
 #define __CH32V30x_STDPERIPH_VERSION        ( (__CH32V30x_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32V30x_STDPERIPH_VERSION_SUB << 0))
 
@@ -5697,9 +5697,9 @@ typedef struct
 #define  RCC_TIM5RST                     ((uint32_t)0x00000008)        /* Timer 5 reset */
 #define  RCC_TIM6RST                     ((uint32_t)0x00000010)        /* Timer 6 reset */
 #define  RCC_TIM7RST                     ((uint32_t)0x00000020)        /* Timer 7 reset */
-#define  RCC_USART6RST                   ((uint32_t)0x00000040)        /* USART 6 reset */
-#define  RCC_USART7RST                   ((uint32_t)0x00000080)        /* USART 7 reset */
-#define  RCC_USART8RST                   ((uint32_t)0x00000100)        /* USART 8 reset */
+#define  RCC_USART6RST                   ((uint32_t)0x00000040)        /* USART 2 reset */
+#define  RCC_USART7RST                   ((uint32_t)0x00000080)        /* USART 2 reset */
+#define  RCC_USART8RST                   ((uint32_t)0x00000100)        /* USART 2 reset */
 #define  RCC_WWDGRST                     ((uint32_t)0x00000800)        /* Window Watchdog reset */
 #define  RCC_SPI2RST                     ((uint32_t)0x00004000)        /* SPI 2 reset */
 #define  RCC_SPI3RST                     ((uint32_t)0x00008000)        /* SPI 3 reset */
@@ -5715,12 +5715,6 @@ typedef struct
 #define  RCC_BKPRST                      ((uint32_t)0x08000000)        /* Backup interface reset */
 #define  RCC_PWRRST                      ((uint32_t)0x10000000)        /* Power interface reset */
 #define  RCC_DACRST                      ((uint32_t)0x20000000)        /* DAC reset */
-
-#define  RCC_UART4RST                   RCC_USART4RST
-#define  RCC_UART5RST                   RCC_USART5RST
-#define  RCC_UART6RST                   RCC_USART6RST
-#define  RCC_UART7RST                   RCC_USART7RST
-#define  RCC_UART8RST                   RCC_USART8RST
 
 /******************  Bit definition for RCC_AHBPCENR register  ******************/
 #define  RCC_DMA1EN                      ((uint16_t)0x0001)            /* DMA1 clock enable */
@@ -5780,12 +5774,6 @@ typedef struct
 #define  RCC_BKPEN                       ((uint32_t)0x08000000)        /* Backup interface clock enable */
 #define  RCC_PWREN                       ((uint32_t)0x10000000)        /* Power interface clock enable */
 #define  RCC_DACEN                       ((uint32_t)0x20000000)
-
-#define  RCC_UART4EN                     RCC_USART4EN
-#define  RCC_UART5EN                     RCC_USART5EN
-#define  RCC_UART6EN                     RCC_USART6EN
-#define  RCC_UART7EN                     RCC_USART7EN
-#define  RCC_UART8EN                     RCC_USART8EN
 
 /*******************  Bit definition for RCC_BDCTLR register  *******************/
 #define  RCC_LSEON                       ((uint32_t)0x00000001)        /* External Low Speed oscillator enable */

@@ -1,88 +1,59 @@
 Peripheral/src/ch32v30x_fsmc.o: ../Peripheral/src/ch32v30x_fsmc.c \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_fsmc.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h \
- d:/MounRiver\ Project/Project/Core/core_riscv.h \
- d:/MounRiver\ Project/Project/User/system_ch32v30x.h \
- d:/MounRiver\ Project/Project/User/ch32v30x_conf.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_adc.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_bkp.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_can.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_crc.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dac.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dbgmcu.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dma.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_exti.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_flash.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_gpio.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_i2c.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_iwdg.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_pwr.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_rcc.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_rtc.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_sdio.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_spi.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_tim.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_usart.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_wwdg.h \
- d:/MounRiver\ Project/Project/User/ch32v30x_it.h \
- d:/MounRiver\ Project/Project/Debug/debug.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h \
- d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_fsmc.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h:
-
-d:/MounRiver\ Project/Project/Core/core_riscv.h:
-
-d:/MounRiver\ Project/Project/User/system_ch32v30x.h:
-
-d:/MounRiver\ Project/Project/User/ch32v30x_conf.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_adc.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_bkp.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_can.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_crc.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dac.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dbgmcu.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_dma.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_exti.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_flash.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_gpio.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_i2c.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_iwdg.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_pwr.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_rcc.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_rtc.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_sdio.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_spi.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_tim.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_usart.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_wwdg.h:
-
-d:/MounRiver\ Project/Project/User/ch32v30x_it.h:
-
-d:/MounRiver\ Project/Project/Debug/debug.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x.h:
-
-d:/MounRiver\ Project/Project/Peripheral/inc/ch32v30x_misc.h:
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_fsmc.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h \
+ c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h \
+ c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h \
+ c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_conf.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_adc.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_bkp.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_can.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_crc.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dac.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dbgmcu.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dma.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_exti.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_flash.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_gpio.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_i2c.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_iwdg.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_pwr.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_rcc.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_rtc.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_sdio.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_spi.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_tim.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_usart.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h \
+ c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h \
+ c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h \
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_fsmc.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
+c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h:
+c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h:
+c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_conf.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_adc.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_bkp.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_can.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_crc.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dac.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dbgmcu.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_dma.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_exti.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_flash.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_gpio.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_i2c.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_iwdg.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_pwr.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_rcc.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_rtc.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_sdio.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_spi.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_tim.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_usart.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h:
+c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
+c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
+c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
