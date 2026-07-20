@@ -1,36 +1,46 @@
-﻿#ifndef __ARM_KINEMATICS_H_
+#ifndef __ARM_KINEMATICS_H_
 #define __ARM_KINEMATICS_H_
 
 #include "ArmServo.h"
-#include <stdint.h>
 #include "ch32v30x.h"
-/* ==================== 机械臂各轴长度宏定义，单位：mm ==================== */
-#define ARM_LINK_A1_BASE_HEIGHT_MM      60.0f   /* A1：底座到肩关节的高度 */
-#define ARM_LINK_A2_SHOULDER_MM         90.0f   /* A2：肩关节到肘关节长度 */
-#define ARM_LINK_A3_ELBOW_MM            90.0f   /* A3：肘关节到腕关节长度 */
-#define ARM_LINK_A4_TOOL_MM             60.0f   /* A4：腕关节到末端执行器长度 */
-#define ARM_BASE_OFFSET_P_MM            0.0f    /* P：底座平面偏移，未知时先置 0 */
+#include <stdint.h>
 
-/* ==================== 舵机安装零位和限制，按实际机械结构可标定 ==================== */
-#define ARM_J1_HOME_DEG                 90.0f
-#define ARM_J2_HOME_DEG                 90.0f
-#define ARM_J3_HOME_DEG                 90.0f
-#define ARM_J4_HOME_DEG                 90.0f
+/*
+ * Geometry in mm. These provisional values preserve the old project's total
+ * dimensions. Replace them with shaft-center measurements before enabling P/G.
+ */
+#define ARM_WORLD_TO_J1_HEIGHT_MM          50.0f
+#define ARM_J1_TO_J2_HEIGHT_MM              20.0f
+#define ARM_LINK_J2_TO_J3_MM              100.0f
+#define ARM_LINK_J3_TO_GRIP_CENTER_MM      120.0f
+#define ARM_J2_AXIS_HEIGHT_MM \
+    (ARM_WORLD_TO_J1_HEIGHT_MM + ARM_J1_TO_J2_HEIGHT_MM)
 
-#define ARM_J1_MIN_DEG                  0.0f
-#define ARM_J1_MAX_DEG                  180.0f
-#define ARM_J2_MIN_DEG                  0.0f
-#define ARM_J2_MAX_DEG                  180.0f
-#define ARM_J3_MIN_DEG                  0.0f
-#define ARM_J3_MAX_DEG                  180.0f
-#define ARM_J4_MIN_DEG                  -70.0f
-#define ARM_J4_MAX_DEG                  180.0f
+/* Keep Cartesian motion locked until geometry and servo mapping are measured. */
+#define ARM_GEOMETRY_CALIBRATED             1U
+#define ARM_CARTESIAN_MOVE_ENABLED          1U
 
-#define ARM_TOOL_PITCH_DEG              90.0f   /* 末端默认姿态角 alpha，按图中 j2+j3+j4=alpha */
-#define ARM_GRIP_OPEN_DEG               40.0f
-#define ARM_GRIP_CLOSE_DEG              95.0f
+/* Raw servo angles corresponding to mechanical q1=q2=q3=0 degrees. */
+#define ARM_J1_SERVO_ZERO_DEG              90.0f
+#define ARM_J2_SERVO_ZERO_DEG              90.0f
+#define ARM_J3_SERVO_ZERO_DEG              90.0f
 
-#define ARM_HOST_RX_BUF_SIZE            64U
+/* Set to +1 or -1 after checking each servo's positive direction. */
+#define ARM_J1_SERVO_SIGN                   1.0f
+#define ARM_J2_SERVO_SIGN                   1.0f
+#define ARM_J3_SERVO_SIGN                   1.0f
+
+/* Conservative raw-angle limit used by S/HOME and inverse-solution checks. */
+#define ARM_DEBUG_SERVO_MIN_DEG             5.0f
+#define ARM_DEBUG_SERVO_MAX_DEG           175.0f
+
+#define ARM_J1_HOME_DEG                    90.0f
+#define ARM_J2_HOME_DEG                    90.0f
+#define ARM_J3_HOME_DEG                    90.0f
+#define ARM_GRIP_OPEN_DEG                  40.0f
+#define ARM_GRIP_CLOSE_DEG                 95.0f
+
+#define ARM_HOST_RX_BUF_SIZE               64U
 
 typedef struct
 {
@@ -39,17 +49,20 @@ typedef struct
     float z;
 } ArmPoint3D;
 
+/* Mechanical angles: q1 yaw, q2 from horizontal, q3 relative to link L1. */
 typedef struct
 {
     float j1;
     float j2;
     float j3;
-    float j4;
 } ArmJointAngles;
 
 void Arm_Init(void);
+void Arm_ForwardKinematics(const ArmJointAngles *angles, ArmPoint3D *point);
+uint8_t Arm_GetCurrentPosition(ArmPoint3D *point);
 uint8_t Arm_InverseKinematics(float x, float y, float z, ArmJointAngles *angles);
 uint8_t Arm_SetJointAngles(const ArmJointAngles *angles);
+uint8_t Arm_SetServoAngle(uint8_t servo_number, float angle_deg);
 uint8_t Arm_MoveToXYZ(float x, float y, float z);
 void Arm_GripOpen(void);
 void Arm_GripClose(void);

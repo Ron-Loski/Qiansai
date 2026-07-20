@@ -31,7 +31,10 @@ Hardware/Src/Astar.o: ../Hardware/Src/Astar.c \
  c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h \
  c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h \
- c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/usart.h
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h
 c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Astar.h:
 c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
@@ -64,4 +67,7 @@ c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
 c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
 c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h:
-c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/usart.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h:

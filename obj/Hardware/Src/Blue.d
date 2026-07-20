@@ -1,5 +1,4 @@
-Hardware/Src/Timer.o: ../Hardware/Src/Timer.c \
- c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h \
+Hardware/Src/Blue.o: ../Hardware/Src/Blue.c \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h \
  c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h \
  c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h \
@@ -28,8 +27,20 @@ Hardware/Src/Timer.o: ../Hardware/Src/Timer.c \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h \
  c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h \
  c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
- c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h
-c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h:
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Global_Inc.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Encoder.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Astar.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmKinematics.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmServo.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/BluetoothControl.h
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
 c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h:
 c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h:
@@ -59,3 +70,16 @@ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h:
 c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
 c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Global_Inc.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Encoder.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Astar.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmKinematics.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmServo.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Blue.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/BluetoothControl.h:

@@ -49,7 +49,7 @@ typedef enum {
 extern MPU6050_Datatypedef MPU6050_Data;
 extern MPU6050_AngleAcctypedef AngleAcc;
 extern MPU6050_AngleGyrotypedef AngleGyro;
-extern MPU6050_AngleFiltertypedef AngleFilter;
+extern volatile MPU6050_AngleFiltertypedef AngleFilter;
 extern MPU6050_Zaxistypedef Zaxis_Data;
 
 extern int16_t AccX;
@@ -60,5 +60,6 @@ extern int16_t GyroY;
 extern int16_t GyroZ;
 
 extern volatile uint8_t Rx_flag;
+extern uint8_t ch;
 
 #endif

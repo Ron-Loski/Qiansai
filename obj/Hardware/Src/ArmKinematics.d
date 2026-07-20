@@ -29,7 +29,9 @@ Hardware/Src/ArmKinematics.o: ../Hardware/Src/ArmKinematics.c \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h \
  c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h \
  c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
- c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h
 c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmKinematics.h:
 c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmServo.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
@@ -61,3 +63,5 @@ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h:
 c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
 c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h:

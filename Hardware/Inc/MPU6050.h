@@ -25,8 +25,9 @@ uint8_t MPU6050_GetID(void);
 void MPU6050_GetData(int16_t *AccX, int16_t *AccY, int16_t *AccZ, 
 						int16_t *GyroX, int16_t *GyroY, int16_t *GyroZ);
 void MPU6050_Getaxis_Z(MPU6050_Zaxistypedef p);
-void MPU6050_GetRoll(void);
+void MPU6050_GetYaw(void);
+extern volatile uint32_t MPU6050_YawSampleCount;
+extern volatile float MPU6050_GyroZDps;
 
 
 #endif
-

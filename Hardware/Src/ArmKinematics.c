@@ -1,279 +1,467 @@
 #include "ArmKinematics.h"
 #include "debug.h"
+#include "Motor.h"
+#include <ctype.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #ifndef ARM_PI
 #define ARM_PI 3.14159265358979323846f
 #endif
 
-static volatile char s_host_rx_buf[ARM_HOST_RX_BUF_SIZE];
-static volatile uint8_t s_host_rx_index = 0;
-static volatile uint8_t s_host_cmd_ready = 0;
-static char s_host_cmd_buf[ARM_HOST_RX_BUF_SIZE];
-static ArmJointAngles s_current_angles = {ARM_J1_HOME_DEG, ARM_J2_HOME_DEG, ARM_J3_HOME_DEG, ARM_J4_HOME_DEG};
+typedef struct
+{
+    ArmJointAngles joint;
+    float servo[3];
+    uint8_t valid;
+} ArmIKCandidate;
 
-/**
- * @brief 角度转弧度。
- * @param deg 角度值，单位：度。
- * @return 弧度值。
- */static float Arm_DegToRad(float deg)
+static volatile char s_host_rx_buf[ARM_HOST_RX_BUF_SIZE];
+static volatile char s_host_pending_buf[ARM_HOST_RX_BUF_SIZE];
+static volatile uint8_t s_host_rx_index = 0U;
+static volatile uint8_t s_host_cmd_ready = 0U;
+static char s_host_cmd_buf[ARM_HOST_RX_BUF_SIZE];
+
+static float Arm_DegToRad(float deg)
 {
     return deg * ARM_PI / 180.0f;
 }
 
-/**
- * @brief 弧度转角度。
- * @param rad 弧度值。
- * @return 角度值，单位：度。
- */static float Arm_RadToDeg(float rad)
+static float Arm_RadToDeg(float rad)
 {
     return rad * 180.0f / ARM_PI;
 }
 
-/**
- * @brief 浮点数上下限约束。
- * @param value 输入值。
- * @param min_value 下限。
- * @param max_value 上限。
- * @return 限幅后的值。
- */static float Arm_LimitFloat(float value, float min_value, float max_value)
+static float Arm_LimitFloat(float value, float min_value, float max_value)
 {
-    if (value < min_value)
-    {
-        return min_value;
-    }
-    if (value > max_value)
-    {
-        return max_value;
-    }
+    if (value < min_value) return min_value;
+    if (value > max_value) return max_value;
     return value;
 }
 
-/**
- * @brief 检查机械臂四个关节角是否在允许范围内。
- * @param angles 关节角结构体指针。
- * @return 1 表示全部合法，0 表示至少一个关节超限。
- * @details Arm_InverseKinematics() 和 Arm_SetJointAngles() 都调用本函数作为安全保护。
- */static uint8_t Arm_CheckJointRange(const ArmJointAngles *angles)
+static uint8_t Arm_RawServoAngleIsSafe(float angle_deg)
 {
-    if (angles->j1 < ARM_J1_MIN_DEG || angles->j1 > ARM_J1_MAX_DEG) return 0;
-    if (angles->j2 < ARM_J2_MIN_DEG || angles->j2 > ARM_J2_MAX_DEG) return 0;
-    if (angles->j3 < ARM_J3_MIN_DEG || angles->j3 > ARM_J3_MAX_DEG) return 0;
-    if (angles->j4 < ARM_J4_MIN_DEG || angles->j4 > ARM_J4_MAX_DEG) return 0;
-    return 1;
+    return (uint8_t)(angle_deg >= ARM_DEBUG_SERVO_MIN_DEG &&
+                     angle_deg <= ARM_DEBUG_SERVO_MAX_DEG);
 }
 
-/**
- * @brief 从上位机命令字符串中解析一个整数数值。
- * @param cursor 字符串游标地址，函数会跳过空格/逗号/Tab 并移动到数字后方。
- * @return 解析出的数值，以 float 返回。
- * @note 当前内部使用 strtol()，实际只支持整数坐标，小数不会被正确解析。
- */static float Arm_ParseNumber(char **cursor)
+static uint8_t Arm_JointToServoAngles(const ArmJointAngles *joint, float servo[3])
 {
-    long value;
-
-    while (**cursor == ' ' || **cursor == ',' || **cursor == '\t')
+    if (joint == 0 || servo == 0)
     {
-        (*cursor)++;
+        return 0U;
     }
 
-    value = strtol(*cursor, cursor, 10);
-    return (float)value;
+    servo[0] = ARM_J1_SERVO_ZERO_DEG + ARM_J1_SERVO_SIGN * joint->j1;
+    servo[1] = ARM_J2_SERVO_ZERO_DEG + ARM_J2_SERVO_SIGN * joint->j2;
+    servo[2] = ARM_J3_SERVO_ZERO_DEG + ARM_J3_SERVO_SIGN * joint->j3;
+
+    return (uint8_t)(Arm_RawServoAngleIsSafe(servo[0]) &&
+                     Arm_RawServoAngleIsSafe(servo[1]) &&
+                     Arm_RawServoAngleIsSafe(servo[2]));
 }
 
-/*
- * 初始化机械臂，使五轴处于同一工作平面内。
- * 当前只有 4 路 PWM，J4 同时作为末端姿态/抓取通道；若增加第五路 PWM，可将抓取舵机独立出去。
- */
-/**
- * @brief 初始化机械臂舵机并回到初始姿态。
- * @param 无。
- * @return 无。
- * @details 调用 ArmServo_Init() 初始化 PWM，再通过 ArmServo_SoftSetAll() 将 J1~J4 移动到 HOME 角度。
- */
-void Arm_Init(void)
+static void Arm_ServoToJointAngles(float servo1, float servo2, float servo3,
+                                   ArmJointAngles *joint)
 {
-    float home[ARM_SERVO_COUNT] = {ARM_J1_HOME_DEG, ARM_J2_HOME_DEG, ARM_J3_HOME_DEG, ARM_J4_HOME_DEG};
+    if (joint == 0)
+    {
+        return;
+    }
 
-    ArmServo_Init();
-    ArmServo_SoftSetAll(home);
-
-    s_current_angles.j1 = ARM_J1_HOME_DEG;
-    s_current_angles.j2 = ARM_J2_HOME_DEG;
-    s_current_angles.j3 = ARM_J3_HOME_DEG;
-    s_current_angles.j4 = ARM_J4_HOME_DEG;
-
-    printf("Arm init finish\r\n");
+    joint->j1 = (servo1 - ARM_J1_SERVO_ZERO_DEG) / ARM_J1_SERVO_SIGN;
+    joint->j2 = (servo2 - ARM_J2_SERVO_ZERO_DEG) / ARM_J2_SERVO_SIGN;
+    joint->j3 = (servo3 - ARM_J3_SERVO_ZERO_DEG) / ARM_J3_SERVO_SIGN;
 }
 
-/*
- * 根据图中公式做空间逆解：
- * 1. J1 由目标点在 XY 平面的方向决定。
- * 2. J2/J3/J4 在同一竖直平面内求解。
- * 3. alpha = J2 + J3 + J4，用 ARM_TOOL_PITCH_DEG 固定末端姿态。
- */
-/**
- * @brief 根据目标空间坐标计算机械臂四个关节角。
- * @param x/y/z 目标末端坐标，单位：mm。
- * @param angles 输出关节角结构体指针。
- * @return 1 表示逆解成功且关节未超限，0 表示目标不可达或关节超限。
- * @details 先根据 x/y 求 J1，再扣除末端 A4 得到腕点坐标，使用余弦定理解 J2/J3，并由固定末端姿态求 J4。
- * @note Arm_MoveToXYZ() 调用本函数后再调用 Arm_SetJointAngles() 输出到舵机。
- */uint8_t Arm_InverseKinematics(float x, float y, float z, ArmJointAngles *angles)
+static void Arm_GetCurrentJointAngles(ArmJointAngles *joint)
 {
-    float planar_len;
-    float alpha_rad;
-    float wrist_l;
-    float wrist_h;
-    float cos_j3;
-    float sin_j3;
-    float j3_rad;
-    float k1;
-    float k2;
-    float sin_j2;
-    float cos_j2;
-    float j2_rad;
-    float j4_deg;
-
-    if (angles == 0)
-    {
-        return 0;
-    }
-
-    planar_len = sqrtf(x * x + y * y) + ARM_BASE_OFFSET_P_MM;
-    alpha_rad = Arm_DegToRad(ARM_TOOL_PITCH_DEG);
-
-    /* 扣除末端 A4 后，得到腕关节需要到达的二维坐标 L/H。 */
-    wrist_l = planar_len - ARM_LINK_A4_TOOL_MM * sinf(alpha_rad);
-    wrist_h = z - ARM_LINK_A1_BASE_HEIGHT_MM - ARM_LINK_A4_TOOL_MM * cosf(alpha_rad);
-
-    cos_j3 = (wrist_l * wrist_l + wrist_h * wrist_h - ARM_LINK_A2_SHOULDER_MM * ARM_LINK_A2_SHOULDER_MM -
-              ARM_LINK_A3_ELBOW_MM * ARM_LINK_A3_ELBOW_MM) /
-             (2.0f * ARM_LINK_A2_SHOULDER_MM * ARM_LINK_A3_ELBOW_MM);
-
-    if (cos_j3 < -1.0f || cos_j3 > 1.0f)
-    {
-        printf("Arm IK fail: target out of range\r\n");
-        return 0;
-    }
-
-    cos_j3 = Arm_LimitFloat(cos_j3, -1.0f, 1.0f);
-    sin_j3 = sqrtf(1.0f - cos_j3 * cos_j3);
-    j3_rad = atan2f(sin_j3, cos_j3);
-
-    k1 = ARM_LINK_A2_SHOULDER_MM + ARM_LINK_A3_ELBOW_MM * cos_j3;
-    k2 = ARM_LINK_A3_ELBOW_MM * sin_j3;
-
-    /* 图中 J2 是相对竖直方向的角度：L=K1*sinJ2+K2*cosJ2，H=K1*cosJ2-K2*sinJ2。 */
-    sin_j2 = (k1 * wrist_l - k2 * wrist_h) / (k1 * k1 + k2 * k2);
-    cos_j2 = (k1 * wrist_h + k2 * wrist_l) / (k1 * k1 + k2 * k2);
-    sin_j2 = Arm_LimitFloat(sin_j2, -1.0f, 1.0f);
-    cos_j2 = Arm_LimitFloat(cos_j2, -1.0f, 1.0f);
-    j2_rad = atan2f(sin_j2, cos_j2);
-
-    angles->j1 = Arm_RadToDeg(atan2f(y, x));
-    if (angles->j1 < 0.0f)
-    {
-        angles->j1 += 180.0f;
-    }
-
-    angles->j2 = Arm_RadToDeg(j2_rad);
-    angles->j3 = Arm_RadToDeg(j3_rad);
-    j4_deg = ARM_TOOL_PITCH_DEG - angles->j2 - angles->j3;
-    angles->j4 = j4_deg;
-
-    if (!Arm_CheckJointRange(angles))
-    {
-        printf("Arm IK fail: joint limit j1=%.1f j2=%.1f j3=%.1f j4=%.1f\r\n",
-               angles->j1, angles->j2, angles->j3, angles->j4);
-        return 0;
-    }
-
-    return 1;
+    Arm_ServoToJointAngles(ArmServo_GetAngle(ARM_SERVO_J1_BASE),
+                           ArmServo_GetAngle(ARM_SERVO_J2_SHOULDER),
+                           ArmServo_GetAngle(ARM_SERVO_J3_WRIST), joint);
 }
 
-/* 独立的关节角度控制函数，逆解和手动控制最终都走这里。 */
-/**
- * @brief 将关节角输出到机械臂舵机。
- * @param angles 目标 J1~J4 角度。
- * @return 1 表示设置成功，0 表示参数为空或关节超限。
- * @details 将角度数组映射到 ARM_SERVO_J1_BASE~ARM_SERVO_J4_WRIST，再调用 ArmServo_SoftSetAll() 平滑动作。
- */uint8_t Arm_SetJointAngles(const ArmJointAngles *angles)
+void Arm_ForwardKinematics(const ArmJointAngles *angles, ArmPoint3D *point)
 {
-    float target[ARM_SERVO_COUNT];
+    float q1;
+    float q2;
+    float q23;
+    float radial;
 
-    if (angles == 0 || !Arm_CheckJointRange(angles))
+    if (angles == 0 || point == 0)
     {
-        return 0;
+        return;
     }
 
-    target[ARM_SERVO_J1_BASE] = angles->j1;
-    target[ARM_SERVO_J2_SHOULDER] = angles->j2;
-    target[ARM_SERVO_J3_ELBOW] = angles->j3;
-    target[ARM_SERVO_J4_WRIST] = angles->j4;
+    q1 = Arm_DegToRad(angles->j1);
+    q2 = Arm_DegToRad(angles->j2);
+    q23 = Arm_DegToRad(angles->j2 + angles->j3);
 
-    ArmServo_SoftSetAll(target);
-    s_current_angles = *angles;
-
-    printf("Arm move j1=%.1f j2=%.1f j3=%.1f j4=%.1f\r\n",
-           angles->j1, angles->j2, angles->j3, angles->j4);
-    return 1;
+    radial = ARM_LINK_J2_TO_J3_MM * cosf(q2) +
+             ARM_LINK_J3_TO_GRIP_CENTER_MM * cosf(q23);
+    point->x = radial * cosf(q1);
+    point->y = radial * sinf(q1);
+    point->z = ARM_J2_AXIS_HEIGHT_MM +
+               ARM_LINK_J2_TO_J3_MM * sinf(q2) +
+               ARM_LINK_J3_TO_GRIP_CENTER_MM * sinf(q23);
 }
 
-/**
- * @brief 控制机械臂末端移动到指定三维坐标。
- * @param x/y/z 目标坐标，单位：mm。
- * @return 1 表示逆解并执行成功，0 表示目标不可达或设置失败。
- * @details 是上位机 P/G 坐标命令最终调用的核心运动函数。
- */uint8_t Arm_MoveToXYZ(float x, float y, float z)
+uint8_t Arm_GetCurrentPosition(ArmPoint3D *point)
 {
+    ArmJointAngles joint;
+
+    if (point == 0)
+    {
+        return 0U;
+    }
+
+    Arm_GetCurrentJointAngles(&joint);
+    Arm_ForwardKinematics(&joint, point);
+    return 1U;
+}
+
+static uint8_t Arm_CalculateIKCandidates(float x, float y, float z,
+                                         ArmIKCandidate candidates[2])
+{
+    float radial = sqrtf(x * x + y * y);
+    float height = z - ARM_J2_AXIS_HEIGHT_MM;
+    float l1 = ARM_LINK_J2_TO_J3_MM;
+    float l2 = ARM_LINK_J3_TO_GRIP_CENTER_MM;
+    float d;
+    float root;
+    float q1;
+    uint8_t i;
+
+    if (candidates == 0 || l1 <= 0.0f || l2 <= 0.0f)
+    {
+        return 0U;
+    }
+
+    memset(candidates, 0, sizeof(ArmIKCandidate) * 2U);
+    d = (radial * radial + height * height - l1 * l1 - l2 * l2) /
+        (2.0f * l1 * l2);
+    if (d < -1.0001f || d > 1.0001f)
+    {
+        return 0U;
+    }
+
+    d = Arm_LimitFloat(d, -1.0f, 1.0f);
+    root = sqrtf(Arm_LimitFloat(1.0f - d * d, 0.0f, 1.0f));
+    q1 = atan2f(y, x);
+
+    for (i = 0U; i < 2U; i++)
+    {
+        float q3 = atan2f((i == 0U) ? root : -root, d);
+        float q2 = atan2f(height, radial) -
+                   atan2f(l2 * sinf(q3), l1 + l2 * cosf(q3));
+
+        candidates[i].joint.j1 = Arm_RadToDeg(q1);
+        candidates[i].joint.j2 = Arm_RadToDeg(q2);
+        candidates[i].joint.j3 = Arm_RadToDeg(q3);
+        candidates[i].valid =
+            Arm_JointToServoAngles(&candidates[i].joint, candidates[i].servo);
+    }
+
+    return 1U;
+}
+
+static int8_t Arm_SelectIKCandidate(const ArmIKCandidate candidates[2])
+{
+    ArmJointAngles current;
+    float best_cost = 1.0e30f;
+    int8_t best = -1;
+    uint8_t i;
+
+    Arm_GetCurrentJointAngles(&current);
+    for (i = 0U; i < 2U; i++)
+    {
+        float d1;
+        float d2;
+        float d3;
+        float cost;
+
+        if (!candidates[i].valid)
+        {
+            continue;
+        }
+
+        d1 = candidates[i].joint.j1 - current.j1;
+        d2 = candidates[i].joint.j2 - current.j2;
+        d3 = candidates[i].joint.j3 - current.j3;
+        cost = d1 * d1 + d2 * d2 + d3 * d3;
+        if (cost < best_cost)
+        {
+            best_cost = cost;
+            best = (int8_t)i;
+        }
+    }
+
+    return best;
+}
+
+uint8_t Arm_InverseKinematics(float x, float y, float z, ArmJointAngles *angles)
+{
+    ArmIKCandidate candidates[2];
+    int8_t selected;
+
+    if (angles == 0 || !Arm_CalculateIKCandidates(x, y, z, candidates))
+    {
+        return 0U;
+    }
+
+    selected = Arm_SelectIKCandidate(candidates);
+    if (selected < 0)
+    {
+        return 0U;
+    }
+
+    *angles = candidates[(uint8_t)selected].joint;
+    return 1U;
+}
+
+uint8_t Arm_SetJointAngles(const ArmJointAngles *angles)
+{
+    float servo[3];
+
+    if (!Arm_JointToServoAngles(angles, servo))
+    {
+        printf("ARM joint rejected: servo limit\r\n");
+        return 0U;
+    }
+
+    ArmServo_ClearStop();
+    ArmServo_SoftSetAngle(ARM_SERVO_J1_BASE, servo[0]);
+    if (ArmServo_StopRequested()) return 0U;
+    ArmServo_SoftSetAngle(ARM_SERVO_J2_SHOULDER, servo[1]);
+    if (ArmServo_StopRequested()) return 0U;
+    ArmServo_SoftSetAngle(ARM_SERVO_J3_WRIST, servo[2]);
+    if (ArmServo_StopRequested()) return 0U;
+
+    printf("ARM moved: q1=%.1f q2=%.1f q3=%.1f; servo=%.1f,%.1f,%.1f\r\n",
+           angles->j1, angles->j2, angles->j3,
+           servo[0], servo[1], servo[2]);
+    return 1U;
+}
+
+uint8_t Arm_MoveToXYZ(float x, float y, float z)
+{
+#if ARM_CARTESIAN_MOVE_ENABLED
     ArmJointAngles angles;
 
     if (!Arm_InverseKinematics(x, y, z, &angles))
     {
-        return 0;
+        printf("ARM move failed: unreachable or servo limit\r\n");
+        return 0U;
     }
-
     return Arm_SetJointAngles(&angles);
+#else
+    (void)x;
+    (void)y;
+    (void)z;
+    printf("ARM Cartesian move locked: calibrate dimensions/zeros, then set "
+           "ARM_CARTESIAN_MOVE_ENABLED=1\r\n");
+    return 0U;
+#endif
 }
 
-/* 抓取函数独立出来，方便上位机单独发送 OPEN/CLOSE。 */
-/**
- * @brief 打开机械臂夹爪。
- * @param 无。
- * @return 无。
- * @details 当前夹爪复用 J4 PWM 通道，调用 ArmServo_SoftSetAngle() 输出 ARM_GRIP_OPEN_DEG。
- */
+void Arm_Init(void)
+{
+    ArmServo_Init();
+    ArmServo_SetInitialAngle(ARM_SERVO_J1_BASE, ARM_J1_HOME_DEG);
+    ArmServo_SetInitialAngle(ARM_SERVO_J2_SHOULDER, ARM_J2_HOME_DEG);
+    ArmServo_SetInitialAngle(ARM_SERVO_J3_WRIST, ARM_J3_HOME_DEG);
+    ArmServo_SetInitialAngle(ARM_SERVO_GRIPPER, ARM_GRIP_OPEN_DEG);
+
+    printf("ARM debug ready; PWM outputs idle until S/HOME/OPEN/CLOSE\r\n");
+    printf("ARM provisional geometry: H=%.1f L1=%.1f L2=%.1f mm, Cartesian=%s\r\n",
+           ARM_J2_AXIS_HEIGHT_MM, ARM_LINK_J2_TO_J3_MM,
+           ARM_LINK_J3_TO_GRIP_CENTER_MM,
+           ARM_CARTESIAN_MOVE_ENABLED ? "enabled" : "locked");
+}
+
 void Arm_GripOpen(void)
 {
+    ArmServo_ClearStop();
     ArmServo_SoftSetAngle(ARM_SERVO_GRIPPER, ARM_GRIP_OPEN_DEG);
-    s_current_angles.j4 = ARM_GRIP_OPEN_DEG;
-    printf("Grip open\r\n");
+    printf(ArmServo_StopRequested() ? "ARM grip stopped\r\n" : "ARM grip open\r\n");
 }
 
-/**
- * @brief 闭合机械臂夹爪。
- * @param 无。
- * @return 无。
- * @details 当前夹爪复用 J4 PWM 通道，调用 ArmServo_SoftSetAngle() 输出 ARM_GRIP_CLOSE_DEG。
- */
 void Arm_GripClose(void)
 {
+    ArmServo_ClearStop();
     ArmServo_SoftSetAngle(ARM_SERVO_GRIPPER, ARM_GRIP_CLOSE_DEG);
-    s_current_angles.j4 = ARM_GRIP_CLOSE_DEG;
-    printf("Grip close\r\n");
+    printf(ArmServo_StopRequested() ? "ARM grip stopped\r\n" : "ARM grip close\r\n");
 }
 
-/* USART1 同时用于 printf TX 和上位机 RX：PA9=TX，PA10=RX。 */
-/**
- * @brief 初始化机械臂上位机串口 USART1。
- * @param baudrate 波特率，例如 115200。
- * @return 无。
- * @details PA9 配置为 TX，PA10 配置为 RX，使能 RXNE 中断；USART1 同时用于 printf 输出和接收上位机命令。
- */
+static void Arm_Home(void)
+{
+    float home[ARM_SERVO_COUNT] = {
+        ARM_J1_HOME_DEG,
+        ARM_J2_HOME_DEG,
+        ARM_J3_HOME_DEG,
+        ARM_GRIP_OPEN_DEG
+    };
+
+    ArmServo_ClearStop();
+    ArmServo_SoftSetAll(home);
+    printf(ArmServo_StopRequested() ? "ARM HOME stopped\r\n" : "ARM HOME done\r\n");
+}
+
+uint8_t Arm_SetServoAngle(uint8_t servo_number, float angle_deg)
+{
+    uint8_t servo_id;
+
+    if (servo_number < 1U || servo_number > ARM_SERVO_COUNT ||
+        !Arm_RawServoAngleIsSafe(angle_deg))
+    {
+        printf("ARM S rejected: id=1..4 angle=%.0f..%.0f\r\n",
+               ARM_DEBUG_SERVO_MIN_DEG, ARM_DEBUG_SERVO_MAX_DEG);
+        return 0U;
+    }
+
+    servo_id = (uint8_t)(servo_number - 1U);
+    ArmServo_ClearStop();
+    ArmServo_SoftSetAngle(servo_id, angle_deg);
+    if (ArmServo_StopRequested())
+    {
+        printf("ARM S%u stopped at %.1f\r\n", (unsigned int)servo_number,
+               ArmServo_GetAngle(servo_id));
+        return 0U;
+    }
+
+    printf("ARM S%u=%.1f pulse=%u us\r\n", (unsigned int)servo_number,
+           ArmServo_GetAngle(servo_id),
+           ArmServo_AngleToPulse(ArmServo_GetAngle(servo_id)));
+    return 1U;
+}
+
+static void Arm_PrintState(void)
+{
+    ArmJointAngles joint;
+    ArmPoint3D point;
+
+    Arm_GetCurrentJointAngles(&joint);
+    Arm_ForwardKinematics(&joint, &point);
+    printf("ARM RAW S1=%.1f(%u) S2=%.1f(%u) S3=%.1f(%u) S4=%.1f(%u)\r\n",
+           ArmServo_GetAngle(0U), ArmServo_IsEnabled(0U),
+           ArmServo_GetAngle(1U), ArmServo_IsEnabled(1U),
+           ArmServo_GetAngle(2U), ArmServo_IsEnabled(2U),
+           ArmServo_GetAngle(3U), ArmServo_IsEnabled(3U));
+    printf("ARM JOINT q1=%.1f q2=%.1f q3=%.1f\r\n",
+           joint.j1, joint.j2, joint.j3);
+    printf("ARM FK claw-center x=%.1f y=%.1f z=%.1f mm\r\n",
+           point.x, point.y, point.z);
+}
+
+static void Arm_DebugIK(float x, float y, float z)
+{
+    ArmIKCandidate candidates[2];
+    int8_t selected;
+    uint8_t i;
+
+    printf("ARM IK target x=%.1f y=%.1f z=%.1f mm\r\n", x, y, z);
+#if !ARM_GEOMETRY_CALIBRATED
+    printf("ARM IK warning: provisional dimensions/servo zeros\r\n");
+#endif
+
+    if (!Arm_CalculateIKCandidates(x, y, z, candidates))
+    {
+        printf("ARM IK unreachable by geometry\r\n");
+        return;
+    }
+
+    for (i = 0U; i < 2U; i++)
+    {
+        printf("ARM IK %c q=%.1f,%.1f,%.1f servo=%.1f,%.1f,%.1f valid=%u\r\n",
+               (i == 0U) ? 'A' : 'B',
+               candidates[i].joint.j1, candidates[i].joint.j2,
+               candidates[i].joint.j3, candidates[i].servo[0],
+               candidates[i].servo[1], candidates[i].servo[2],
+               candidates[i].valid);
+    }
+
+    selected = Arm_SelectIKCandidate(candidates);
+    if (selected < 0)
+    {
+        printf("ARM IK no solution inside servo limits\r\n");
+    }
+    else
+    {
+        printf("ARM IK selected=%c (dry-run, no movement)\r\n",
+               (selected == 0) ? 'A' : 'B');
+    }
+}
+
+static void Arm_PrintHelp(void)
+{
+    printf("ARM CMD: S id angle | HOME | READ | FK | IK x y z\r\n");
+    printf("ARM CMD: P x y z | G x y z | OPEN | CLOSE | STOP | HELP\r\n");
+    printf("ARM USART1 packets are ASCII and require CRLF\r\n");
+}
+
+static void Arm_SkipSeparators(char **cursor)
+{
+    while (**cursor == ' ' || **cursor == '\t' || **cursor == ',')
+    {
+        (*cursor)++;
+    }
+}
+
+static uint8_t Arm_ParseFloat(char **cursor, float *value)
+{
+    char *end;
+
+    Arm_SkipSeparators(cursor);
+    if (**cursor == '\0')
+    {
+        return 0U;
+    }
+
+    *value = strtof(*cursor, &end);
+    if (end == *cursor)
+    {
+        return 0U;
+    }
+    *cursor = end;
+    return 1U;
+}
+
+static uint8_t Arm_ParseLong(char **cursor, long *value)
+{
+    char *end;
+
+    Arm_SkipSeparators(cursor);
+    if (**cursor == '\0')
+    {
+        return 0U;
+    }
+
+    *value = strtol(*cursor, &end, 10);
+    if (end == *cursor)
+    {
+        return 0U;
+    }
+    *cursor = end;
+    return 1U;
+}
+
+static uint8_t Arm_AtCommandEnd(char *cursor)
+{
+    Arm_SkipSeparators(&cursor);
+    return (uint8_t)(*cursor == '\0');
+}
+
+static uint8_t Arm_IsStopLine(const volatile char *line, uint8_t length)
+{
+    return (uint8_t)(length == 4U &&
+                     (line[0] == 'S' || line[0] == 's') &&
+                     (line[1] == 'T' || line[1] == 't') &&
+                     (line[2] == 'O' || line[2] == 'o') &&
+                     (line[3] == 'P' || line[3] == 'p'));
+}
+
 void Arm_HostUartInit(uint32_t baudrate)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -298,74 +486,65 @@ void Arm_HostUartInit(uint32_t baudrate)
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
     USART_Init(USART1, &USART_InitStructure);
-
     USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1U;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0U;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-
     USART_Cmd(USART1, ENABLE);
 }
 
-/**
- * @brief USART1 接收中断服务函数。
- * @param 无。
- * @return 无。
- * @details 按字符接收上位机文本命令，遇到 \r 或 \n 时结束一帧并置位 s_host_cmd_ready。
- */
 void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void USART1_IRQHandler(void)
 {
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
-        char ch = (char)USART_ReceiveData(USART1);
+        char data = (char)USART_ReceiveData(USART1);
 
-        if (ch == '\r' || ch == '\n')
+        if (data == '\r' || data == '\n')
         {
-            if (s_host_rx_index > 0)
+            if (s_host_rx_index > 0U)
             {
+                uint8_t i;
+                uint8_t is_stop;
                 s_host_rx_buf[s_host_rx_index] = '\0';
-                s_host_cmd_ready = 1;
+                is_stop = Arm_IsStopLine(s_host_rx_buf, s_host_rx_index);
+                if (is_stop)
+                {
+                    ArmServo_RequestStop();
+                }
+                /* STOP has priority and replaces any queued non-safety command. */
+                if (is_stop || !s_host_cmd_ready)
+                {
+                    for (i = 0U; i <= s_host_rx_index; i++)
+                    {
+                        s_host_pending_buf[i] = s_host_rx_buf[i];
+                    }
+                    s_host_cmd_ready = 1U;
+                }
             }
-            s_host_rx_index = 0;
+            s_host_rx_index = 0U;
         }
         else if (s_host_rx_index < (ARM_HOST_RX_BUF_SIZE - 1U))
         {
-            s_host_rx_buf[s_host_rx_index++] = ch;
+            s_host_rx_buf[s_host_rx_index++] = data;
         }
         else
         {
-            s_host_rx_index = 0;
+            s_host_rx_index = 0U;
         }
 
         USART_ClearITPendingBit(USART1, USART_IT_RXNE);
     }
 }
 
-/*
- * 上位机命令格式：
- *   P x y z      只移动到指定三维坐标，单位 mm，例如：P 120 0 80
- *   G x y z      移动到指定坐标后执行抓取闭合，例如：G 120 0 80
- *   OPEN         打开抓取
- *   CLOSE        闭合抓取
- */
-/**
- * @brief 解析并执行上位机机械臂命令。
- * @param 无。
- * @return 无。
- * @details 支持 P x y z、G x y z、OPEN、CLOSE。P/G 调用 Arm_MoveToXYZ()，G 成功后额外调用 Arm_GripClose()。
- * @note 本函数需要在主循环中周期调用，命令数据由 USART1_IRQHandler() 收集。
- */
 void Arm_ProcessHostCommand(void)
 {
+    char command[12];
     char *cursor;
-    char command;
-    float x;
-    float y;
-    float z;
+    uint8_t command_length = 0U;
 
     if (!s_host_cmd_ready)
     {
@@ -373,41 +552,109 @@ void Arm_ProcessHostCommand(void)
     }
 
     __disable_irq();
-    strncpy(s_host_cmd_buf, (const char *)s_host_rx_buf, ARM_HOST_RX_BUF_SIZE);
+    strncpy(s_host_cmd_buf, (const char *)s_host_pending_buf, ARM_HOST_RX_BUF_SIZE);
     s_host_cmd_buf[ARM_HOST_RX_BUF_SIZE - 1U] = '\0';
-    s_host_cmd_ready = 0;
+    s_host_cmd_ready = 0U;
     __enable_irq();
 
     cursor = s_host_cmd_buf;
-    while (*cursor == ' ' || *cursor == '\t')
+    Arm_SkipSeparators(&cursor);
+    while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t' &&
+           *cursor != ',' && command_length < (sizeof(command) - 1U))
     {
-        cursor++;
+        command[command_length++] = (char)toupper((unsigned char)*cursor++);
     }
-    command = *cursor;
+    command[command_length] = '\0';
 
-    if (command == 'P' || command == 'p' || command == 'G' || command == 'g')
+    printf("USART1 ARM cmd='%s'\r\n", s_host_cmd_buf);
+
+    if (strcmp(command, "S") == 0)
     {
-        cursor++;
-        x = Arm_ParseNumber(&cursor);
-        y = Arm_ParseNumber(&cursor);
-        z = Arm_ParseNumber(&cursor);
-
-        printf("Host target x=%.1f y=%.1f z=%.1f\r\n", x, y, z);
-        if (Arm_MoveToXYZ(x, y, z) && (command == 'G' || command == 'g'))
+        long servo_number;
+        float angle;
+        if (!Arm_ParseLong(&cursor, &servo_number) ||
+            !Arm_ParseFloat(&cursor, &angle) || !Arm_AtCommandEnd(cursor))
+        {
+            printf("ARM usage: S id angle\r\n");
+        }
+        else
+        {
+            if (servo_number < 1L || servo_number > (long)ARM_SERVO_COUNT)
+            {
+                printf("ARM S rejected: id=1..4\r\n");
+            }
+            else
+            {
+                (void)Arm_SetServoAngle((uint8_t)servo_number, angle);
+            }
+        }
+    }
+    else if (strcmp(command, "HOME") == 0 && Arm_AtCommandEnd(cursor))
+    {
+        Arm_Home();
+    }
+    else if ((strcmp(command, "READ") == 0 || strcmp(command, "FK") == 0) &&
+             Arm_AtCommandEnd(cursor))
+    {
+        Arm_PrintState();
+    }
+    else if (strcmp(command, "IK") == 0)
+    {
+        float x;
+        float y;
+        float z;
+        if (!Arm_ParseFloat(&cursor, &x) || !Arm_ParseFloat(&cursor, &y) ||
+            !Arm_ParseFloat(&cursor, &z) || !Arm_AtCommandEnd(cursor))
+        {
+            printf("ARM usage: IK x y z\r\n");
+        }
+        else
+        {
+            Arm_DebugIK(x, y, z);
+        }
+    }
+    else if (strcmp(command, "P") == 0 || strcmp(command, "G") == 0)
+    {
+        float x;
+        float y;
+        float z;
+        if (!Arm_ParseFloat(&cursor, &x) || !Arm_ParseFloat(&cursor, &y) ||
+            !Arm_ParseFloat(&cursor, &z) || !Arm_AtCommandEnd(cursor))
+        {
+            printf("ARM usage: P/G x y z\r\n");
+        }
+        else if (Arm_MoveToXYZ(x, y, z) && strcmp(command, "G") == 0)
         {
             Arm_GripClose();
         }
     }
-    else if (strncmp(s_host_cmd_buf, "OPEN", 4) == 0 || strncmp(s_host_cmd_buf, "open", 4) == 0)
+    else if (strcmp(command, "OPEN") == 0 && Arm_AtCommandEnd(cursor))
     {
         Arm_GripOpen();
     }
-    else if (strncmp(s_host_cmd_buf, "CLOSE", 5) == 0 || strncmp(s_host_cmd_buf, "close", 5) == 0)
+    else if (strcmp(command, "CLOSE") == 0 && Arm_AtCommandEnd(cursor))
     {
         Arm_GripClose();
     }
+    else if (strcmp(command, "STOP") == 0 && Arm_AtCommandEnd(cursor))
+    {
+        ArmServo_RequestStop();
+        printf("ARM STOP: holding current angles\r\n");
+    }
+    else if (strcmp(command, "HELP") == 0 && Arm_AtCommandEnd(cursor))
+    {
+        Arm_PrintHelp();
+    }
+    else if ((strcmp(command, "00") == 0 || strcmp(command, "11") == 0 ||
+              strcmp(command, "22") == 0 || strcmp(command, "33") == 0 ||
+              strcmp(command, "44") == 0 || strcmp(command, "55") == 0 ||
+              strcmp(command, "66") == 0 || strcmp(command, "77") == 0 ||
+              strcmp(command, "88") == 0) && Arm_AtCommandEnd(cursor))
+    {
+        (void)Motor_TurnToYawCommand((uint8_t)strtoul(command, 0, 10));
+    }
     else
     {
-        printf("Unknown cmd: %s\r\n", s_host_cmd_buf);
+        printf("ARM unknown command; send HELP\r\n");
     }
 }

@@ -8,16 +8,10 @@
 #include "Varibles.h"
 #include "Encoder.h"
 #include "Astar.h"
-#include "usart.h"
 #include "ArmKinematics.h"
 #include "ArmServo.h"
-#include "Timer.h"
-#include "CallBack.h"
-#include "PID.h"
-
+#include "Blue.h"
+#include "Button.h"
+#include "BluetoothControl.h"
 
 #endif
-
-
-
-

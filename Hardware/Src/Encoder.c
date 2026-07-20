@@ -4,14 +4,6 @@
 #define ENCODER_IC_FILTER     10
 
 
-
-/**
- * @brief 初始化两个编码器计数定时器。
- * @param 无。
- * @return 无。
- * @details TIM8 和 TIM10 配置为编码器接口模式，PC6/PC7、PB8/PB9 作为两组编码器输入。
- * @note forward_dis() 和原编码器转向逻辑通过 TIM8->CNT、TIM10->CNT 或 Encoder_GetCount() 读取位移反馈。
- */
 void Encoder_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -64,13 +56,6 @@ void Encoder_Init(void)
     TIM_Cmd(TIM10, ENABLE);
 }
 
-
-/**
- * @brief 获取指定编码器的当前计数值。
- * @param Encoder 编码器编号，ENCODER_1 读取 TIM8，ENCODER_2 读取 TIM10。
- * @return 当前编码器计数值；编号无效时返回 0。
- * @details 将 16 位定时器计数强制转换为 int16_t，便于表示正反方向计数。
- */
 int16_t Encoder_GetCount(uint8_t Encoder)
 {
     if(Encoder == ENCODER_1)

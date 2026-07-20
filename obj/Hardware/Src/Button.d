@@ -1,5 +1,5 @@
-Hardware/Src/CallBack.o: ../Hardware/Src/CallBack.c \
- c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/CallBack.h \
+Hardware/Src/Button.o: ../Hardware/Src/Button.c \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h \
  c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h \
  c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h \
@@ -28,9 +28,8 @@ Hardware/Src/CallBack.o: ../Hardware/Src/CallBack.c \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h \
  c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h \
  c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
- c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h \
- c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h
-c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/CallBack.h:
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Button.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
 c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h:
 c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h:
@@ -60,4 +59,3 @@ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h:
 c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
 c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
-c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h:

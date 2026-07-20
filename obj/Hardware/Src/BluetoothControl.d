@@ -1,5 +1,5 @@
-Hardware/Src/cllback.o: ../Hardware/Src/cllback.c \
- c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h \
+Hardware/Src/BluetoothControl.o: ../Hardware/Src/BluetoothControl.c \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/BluetoothControl.h \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h \
  c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h \
  c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h \
@@ -28,8 +28,14 @@ Hardware/Src/cllback.o: ../Hardware/Src/cllback.c \
  c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h \
  c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h \
  c:/Users/15256/Desktop/QIANSAI/Debug/debug.h \
- c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h
-c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Timer.h:
+ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmKinematics.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmServo.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h \
+ c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/BluetoothControl.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x.h:
 c:/Users/15256/Desktop/QIANSAI/Core/core_riscv.h:
 c:/Users/15256/Desktop/QIANSAI/User/system_ch32v30x.h:
@@ -59,3 +65,9 @@ c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_wwdg.h:
 c:/Users/15256/Desktop/QIANSAI/User/ch32v30x_it.h:
 c:/Users/15256/Desktop/QIANSAI/Debug/debug.h:
 c:/Users/15256/Desktop/QIANSAI/Peripheral/inc/ch32v30x_misc.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmKinematics.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/ArmServo.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Motor.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/Varibles.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050.h:
+c:/Users/15256/Desktop/QIANSAI/Hardware/Inc/MPU6050_Reg.h:

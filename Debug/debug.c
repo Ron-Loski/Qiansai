@@ -245,7 +245,7 @@ __attribute__((used)) void *_sbrk(ptrdiff_t incr)
     if ((curbrk + incr < _end) || (curbrk + incr > _heap_end))
     return NULL - 1;
 
-        curbrk += incr;
+    curbrk += incr;
     return curbrk - incr;
 }
 

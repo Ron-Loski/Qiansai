@@ -15,7 +15,10 @@
 			"link": "WCH-Link",
 			"peripheral_version": "2.9",
 			"calibrateSupport": false,
-			"calibrateCommand": ""
+			"calibrateCommand": "",
+			"UIConfigSupport": false,
+			"UIConfigCommand": "",
+			"externalFlashSupport": false
 		},
 		"linkedFolders": [],
 		"removedResources": [
@@ -105,9 +108,12 @@
 					},
 					"includes": {
 						"include_paths": [
-							"${project}/Startup"
+							"${project}/Startup",
+							"${project}/Hardware"
 						],
-						"include_system_paths": [],
+						"include_system_paths": [
+							"${project}/Hardware"
+						],
 						"include_files": []
 					},
 					"other_warning_flags": "",
@@ -136,7 +142,9 @@
 							"${project}/Hardware/Inc",
 							"${project}/Hardware/Src"
 						],
-						"include_system_paths": [],
+						"include_system_paths": [
+							"${project}/Hardware"
+						],
 						"include_files": []
 					},
 					"optimization": {
@@ -277,6 +285,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -339,6 +348,8 @@
 		"disablepowerout": false,
 		"clearcodeflash": false,
 		"disablecodeprotect": false,
+		"flashType": "",
+		"asmFile_path": "",
 		"exepath": "",
 		"exearguments": ""
 	},
